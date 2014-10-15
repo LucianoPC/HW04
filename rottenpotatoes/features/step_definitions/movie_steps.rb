@@ -15,6 +15,30 @@ Then /the director of "(.*?)" should be "(.*?)"/ do |title, director|
 	assert Movie.find_by_title(title).director == director
 end
 
+Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+  assert page.body.index("#{e1}") < page.body.index("#{e2}") 
+end
+
+When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
+  ratings = rating_list.split(", ")
+
+  ratings.each do |rating|
+   if uncheck.blank?
+      check("ratings[#{rating}]")
+   else
+      uncheck("ratings[#{rating}]")
+   end
+  end
+end
+
+Then /I should see all the movies/ do
+  Movie.all.each do |movie|
+    steps %Q{
+      And I should see "#{movie.title}"
+    }
+  end
+end
+
 
 # Make sure that one string (regexp) occurs before or after another one
 #   on the same page
